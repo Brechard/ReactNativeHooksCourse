@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Text } from 'react-native';
 import SearchBar from '../components/SearchBar';
-import yelp from '../api/yelp';
 import useResults from '../hooks/useResults';
 import ResultsList from '../components/ResultsList';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SearchScreen = () => {
     const [term, setTerm] = useState('');
-    const [searchApi, results, errorMessage] = useResults ();
+    const [searchApi, results, errorMessage] = useResults();
     const filterResultsByPrice = (price) => {
         // price === '€' || '€€' || '€€€'
         return results.filter(results => results.price === price);
@@ -15,24 +15,21 @@ const SearchScreen = () => {
 
     // console.log(results);
     return (
-        <View style={styles.background}>
-            <SearchBar 
-                term={term} 
+        // This is an empty tag, that allows us to return only one element as React requires
+        // without using the <View> tag that gives a lot of problems of expanding/collapsing
+        <>
+            <SearchBar
+                term={term}
                 onTermChange={setTerm}
-                onTermSubmit={() => searchApi(term)}/>
+                onTermSubmit={() => searchApi(term)} />
             {errorMessage ? <Text>{errorMessage}</Text> : null}
-            <Text>We have found {results.length} results</Text>
-            <ResultsList results={filterResultsByPrice('€')} title="Cost effective"/>
-            <ResultsList results={filterResultsByPrice('€€')} title="Bit Pricier"/>
-            <ResultsList results={filterResultsByPrice('€€€')} title="Spender"/>
-        </View>
+            <ScrollView>
+                <ResultsList results={filterResultsByPrice('€')} title="Cost effective" />
+                <ResultsList results={filterResultsByPrice('€€')} title="Bit Pricier" />
+                <ResultsList results={filterResultsByPrice('€€€')} title="Spender" />
+            </ScrollView>
+        </>
     )
 };
-
-const styles = StyleSheet.create({
-    background: {
-        backgroundColor: '#FFF'
-    }
-});
 
 export default SearchScreen;
